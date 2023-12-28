@@ -1,0 +1,70 @@
+pipeline {
+
+agent none
+
+triggers {pollSCM '* * * * *'}
+
+parameters {
+  choice choices: ['dev', 'qa'], name: 'Environment'
+  string defaultValue: 'Manojbs', name: 'name'
+}
+
+environment {
+  env = "${params.Environment}"
+  user = "${params.name}"
+}
+
+	stages {
+  		stage('stage1') {
+				agent { label 'DevopsTest' }
+    				steps {
+      					   echo "Hi This is ${user}"
+					sh 'echo "Build URL: ${BUILD_URL}"'
+    					}
+  				}
+		stage('stage2') {
+				agent { label 'DevopsTest' }
+    				steps {
+      					echo "Deployment Environment: ${env}"
+					sh 'echo "Jenkins URL: ${JENKINS_URL}"'
+    					}
+  				}
+
+  		stage('stage3') {
+				when {
+				allOf {
+                		expression { currentBuild.resultIsBetterOrEqualTo('SUCCESS') }
+			
+				}
+            			}
+				agent { label 'Tomcat' }
+    				steps {
+      					sh 'echo "Branch Name: ${BRANCH_NAME}"'
+    				}
+  				}
+    		stage('stage4') {
+				when {
+                		expression { currentBuild.resultIsBetterOrEqualTo('SUCCESS') }
+            			}
+				agent { label 'Tomcat' }
+    				steps {
+      					sh 'echo "Build ID: ${BUILD_ID}"'
+    					}
+				}
+	
+    	}
+post {
+    always {
+        emailext(
+            subject: "Checking the Build",
+            body: """
+            Job: \${PROJECT_NAME}
+            Build Number: \${BUILD_NUMBER}
+            Build URL: \${BUILD_URL}
+            User: \${BUILD_USER}
+            """,
+            to: "bs.manushetty@gmail.com",
+        )
+    }
+}	
+}
