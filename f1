@@ -6,7 +6,7 @@ triggers {pollSCM '* * * * *'}
 
 parameters {
   choice choices: ['dev', 'qa'], name: 'Environment'
-  string defaultValue: 'Manojbs', name: 'name'
+  string defaultValue: 'Akash', name: 'name'
 }
 
 environment {
@@ -16,14 +16,14 @@ environment {
 
 	stages {
   		stage('stage1') {
-				agent { label 'DevopsTest' }
+				agent { label 'Dev' }
     				steps {
       					   echo "Hi This is ${user}"
 					sh 'echo "Build URL: ${BUILD_URL}"'
     					}
   				}
 		stage('stage2') {
-				agent { label 'DevopsTest' }
+				agent { label 'Dev' }
     				steps {
       					echo "Deployment Environment: ${env}"
 					sh 'echo "Jenkins URL: ${JENKINS_URL}"'
@@ -37,7 +37,7 @@ environment {
 			
 				}
             			}
-				agent { label 'Tomcat' }
+				agent { label 'tomcat' }
     				steps {
       					sh 'echo "Branch Name: ${BRANCH_NAME}"'
     				}
@@ -46,7 +46,7 @@ environment {
 				when {
                 		expression { currentBuild.resultIsBetterOrEqualTo('SUCCESS') }
             			}
-				agent { label 'Tomcat' }
+				agent { label 'tomcat' }
     				steps {
       					sh 'echo "Build ID: ${BUILD_ID}"'
     					}
