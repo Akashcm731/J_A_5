@@ -2,42 +2,52 @@ pipeline {
 
 agent none
 
-triggers {pollSCM '* * * * *'}
+triggers {
+  cron '* * * * *'
+  pollSCM '* * * * *'
+}
+
 
 parameters {
-  choice choices: ['dev', 'qa'], name: 'Environment'
+  choice choices: ['dev', 'qa', 'test'], name: 'Environment'
+  booleanParam description: 'true or false', name: 'Bool'
   string defaultValue: 'Akash', name: 'name'
 }
 
 environment {
   env = "${params.Environment}"
   user = "${params.name}"
+  boolean = "${parm.Bool}"
+  password=credentials('PASSWORD')
+  ssh_cred=credentials('SSH_CRED')
 }
 
 	stages {
   		stage('stage1') {
-				agent { label 'Dev' }
+				agent { label 'ag1' }
     				steps {
       					   echo "Hi This is ${user}"
 					sh 'echo "Build URL: ${BUILD_URL}"'
     					}
   				}
 		stage('stage2') {
-				agent { label 'Dev' }
+				agent { label 'ag1' }
     				steps {
       					echo "Deployment Environment: ${env}"
 					sh 'echo "Jenkins URL: ${JENKINS_URL}"'
+					sh 'echo "password user is ${password_USR} & password psw is ${password_PSW}"'
     					}
   				}
 
   		stage('stage3') {
 				when {
+				branch 'main, dev'
 				allOf {
                 		expression { currentBuild.resultIsBetterOrEqualTo('SUCCESS') }
 			
 				}
             			}
-				agent { label 'tomcat' }
+				agent { label 'ag2' }
     				steps {
       					sh 'echo "Branch Name: ${BRANCH_NAME}"'
     				}
@@ -46,7 +56,7 @@ environment {
 				when {
                 		expression { currentBuild.resultIsBetterOrEqualTo('SUCCESS') }
             			}
-				agent { label 'tomcat' }
+				agent { label 'ag2' }
     				steps {
       					sh 'echo "Build ID: ${BUILD_ID}"'
     					}
@@ -63,7 +73,7 @@ post {
             Build URL: \${BUILD_URL}
             User: \${BUILD_USER}
             """,
-            to: "awsper09@gmail.com",
+            to: "awsprac467@gmail.com",
         )
     }
 }	
