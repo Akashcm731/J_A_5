@@ -18,7 +18,7 @@ environment {
   env = "${params.Environment}"
   user = "${params.name}"
   boolean = "${parm.Bool}"
-  password=credentials('PASSWORD')
+  password=credentials('pass')
   ssh_cred=credentials('SSH_CRED')
 }
 
