@@ -10,7 +10,7 @@ triggers {
 
 parameters {
   choice choices: ['dev', 'qa', 'test'], name: 'Environment'
-  booleanParam description: 'true or false', name: 'Bool'
+  booleanParam(name: 'Bool', defaultValue: true, description: 'Boolean parameter')
   string defaultValue: 'Akash', name: 'name'
 }
 
