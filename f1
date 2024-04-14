@@ -73,7 +73,7 @@ post {
             Build URL: \${BUILD_URL}
             User: \${BUILD_USER}
             """,
-            to: "awsprac467@gmail.com",
+            to: "awsprac467@gmail.com"
         )
     }
 }	
